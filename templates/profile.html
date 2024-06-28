@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup</title>
+    
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        
+        body {
+            background-color: #d5d9dd;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+        .instruction-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            height: 650px;
+            background-color: #fff; 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            background: linear-gradient(to right, #24bbb6, #05f7c6);
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group textarea {
+            transition: all 0.3s ease;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fff;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="tel"]:focus,
+        .form-group textarea:focus {
+            border-color: #007bff; 
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn-primary {
+            background-color: #007bff; 
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3; 
+            border-color: #0056b3;
+        }
+        .profile-section {
+            height: 650px; 
+            overflow-y: auto;
+            background-color: #fff; 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            border: 1px solid #ccc;
+            padding: 20px;
+            background: linear-gradient(to right, #01b77e, #077b64);
+        }
+        .required-field {
+            border-color: #dc3545 !important; 
+        }
+        .custom-select {
+            appearance: none;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        .custom-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .custom-select option {
+            color: #495057;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="instruction-box">
+                    <h2 class="mb-4">Instructions</h2>
+                    <ol>
+                        <li>This form contains 91 questions of engineering background.</li>
+                        <li>There is no negative marking, so attempt all questions.</li>
+                        <li>Ensure that you provide accurate information as the result will be sent to your email.</li>
+                        <li>After answering each question, click 'Save' to proceed to the next question.</li>
+                        <li>Upon completion, you will receive the result in your email.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-section">
+                    <h1 class="mb-4">Profile Setup</h1>
+                    <form id="profileForm" action="/submit_form1" method="POST">
+                        <div id="errorMessage" class="alert alert-danger mt-3" style="display: none;">
+                            Please fill in all required fields.
+                        </div>
+                        <div class="form-group">
+                            <label for="userNameInput">Name:</label>
+                            <input type="text" class="form-control" id="userNameInput" name="userNameInput" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmailInput">Email:</label>
+                            <input type="email" class="form-control" id="userEmailInput" name="userEmailInput" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone:</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address:</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="education">Education:</label>
+                            <select class="custom-select" id="education" name="education" required>
+                                <option value="">Select your education</option>
+                                <option value="SSLC">SSLC</option>
+                                <option value="PUC">PUC</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hobbies">Hobbies:</label>
+                            <textarea class="form-control" id="hobbies" name="hobbies" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="submitForm()">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS and jQuery (for Bootstrap) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function submitForm() {
+            if (validateForm()) {
+                // AJAX request to submit form data to Flask backend
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit_form1',
+                    data: $('#profileForm').serialize(),
+                    success: function(response) {
+                        window.location.href = '/quiz';
+                    },
+                    error: function(error) {
+                        console.error('Error submitting form:', error);
+                        // Handle error if needed
+                    }
+                });
+            } else {
+                $("#errorMessage").show(); // Show error message if form is invalid
+                $('#profileForm :input[required]').each(function() {
+                    if ($(this).val() === '') {
+                        $(this).focus();
+                        return false;
+                    }
+                });
+            }
+        }
+
+        function validateForm() {
+            var isValid = true;
+            $('#profileForm :input[required]').each(function() {
+                if ($(this).val() === '') {
+                    isValid = false;
+                    $(this).addClass('required-field'); // Add class to highlight the empty required fields
+                } else {
+                    $(this).removeClass('required-field'); // Remove the class if the field is filled
+                }
+            });
+            return isValid;
+        }
+    </script>
+</body>
+</html>

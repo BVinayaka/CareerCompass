@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Code</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/validate.css">
+    <style>
+        /* Style for the code input box */
+        .code-input {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .code-input input {
+            width: 14%;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Your Website</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Verification Code</div>
+                    <div class="card-body">
+                        <form id="verificationForm" action="/validate" method="post">
+                            <div class="mb-3">
+                                <label for="code1" class="form-label">Enter Verification Code:</label>
+                                <div class="code-input">
+                                    <input type="text" class="form-control code" id="code1" name="digit1" maxlength="1" required autofocus>
+                                    <input type="text" class="form-control code" id="code2" name="digit2" maxlength="1" required>
+                                    <input type="text" class="form-control code" id="code3" name="digit3" maxlength="1" required>
+                                    <input type="text" class="form-control code" id="code4" name="digit4" maxlength="1" required>
+                                    <input type="text" class="form-control code" id="code5" name="digit5" maxlength="1" required>
+                                    <input type="text" class="form-control code" id="code6" name="digit6" maxlength="1" required>
+                                </div>
+                                <!-- Hidden input to store the combined code -->
+                                <input type="hidden" id="code" name="code">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+                        </form>
+                        <div class="resend-code mt-3">
+                            Didn't receive the code? <a href="/resend">Resend Code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (Optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputs = document.querySelectorAll('.code-input input');
+            const codeInput = document.getElementById('code');
+            const verificationForm = document.getElementById('verificationForm');
+
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('input', function () {
+                    if (this.value.length >= 1) {
+                        if (i < inputs.length - 1) {
+                            inputs[i + 1].focus();
+                        } else {
+                            this.blur(); // Lose focus on the last input
+                        }
+                        updateCode();
+                    }
+                });
+
+                inputs[i].addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && this.value.length === 0 && i > 0) {
+                        inputs[i - 1].focus(); // Move focus to previous input on backspace
+                    }
+                    updateCode();
+                });
+            }
+
+            function updateCode() {
+                let codeValue = '';
+                for (let i = 0; i < inputs.length; i++) {
+                    codeValue += inputs[i].value;
+                }
+                codeInput.value = codeValue;
+            }
+
+            verificationForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(verificationForm);
+
+                fetch('/validate', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Signup successful. Redirecting to login page...");
+                        window.location.href = '/login';
+                    } else {
+                        alert(data.message || "An error occurred. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred. Please try again.");
+                });
+            });
+        });
+    </script>
+</body>
+</html>

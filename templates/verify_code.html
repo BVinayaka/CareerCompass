@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        body {
+            padding: 20px;
+            background: #19aa8d; /* Prevent horizontal scrolling */
+        background: linear-gradient(to right, #01b77e, #077b64);
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .alert {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .code-input {
+            display: flex;
+            gap: 10px;
+        }
+        .code-input input {
+            text-align: center;
+            font-size: 1.5em;
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify Code</h2>
+        <!-- Bootstrap alert component -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <!-- Bootstrap form -->
+        <form id="verifyForm" action="{{ url_for('verify_code') }}" method="post">
+            <input type="hidden" name="email" value="{{ email }}">
+            <div class="form-group">
+                <label for="code1" class="form-label">Enter Verification Code:</label>
+                <div class="code-input">
+                    <input type="text" class="form-control code" id="code1" name="digit1" maxlength="1" required autofocus autocomplete="off">
+                    <input type="text" class="form-control code" id="code2" name="digit2" maxlength="1" required autocomplete="off">
+                    <input type="text" class="form-control code" id="code3" name="digit3" maxlength="1" required autocomplete="off">
+                    <input type="text" class="form-control code" id="code4" name="digit4" maxlength="1" required autocomplete="off">
+                    <input type="text" class="form-control code" id="code5" name="digit5" maxlength="1" required autocomplete="off">
+                    <input type="text" class="form-control code" id="code6" name="digit6" maxlength="1" required autocomplete="off">
+                </div>
+                <!-- Hidden input to store the combined code -->
+                <input type="hidden" id="verification_code" name="verification_code">
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitButton">Verify</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputs = document.querySelectorAll('.code-input input');
+            const codeInput = document.getElementById('verification_code');
+            const form = document.getElementById('verifyForm');
+            const submitButton = document.getElementById('submitButton');
+
+            function updateCode() {
+                let codeValue = '';
+                inputs.forEach(input => {
+                    codeValue += input.value;
+                });
+                codeInput.value = codeValue;
+            }
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function () {
+                    if (this.value.length >= 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    } else if (this.value.length >= 1) {
+                        this.blur();
+                    }
+                    updateCode();
+                });
+
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    updateCode();
+                });
+            });
+
+            form.addEventListener('submit', function (e) {
+                updateCode();
+            });
+
+            submitButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                form.submit();
+            });
+        });
+    </script>
+</body>
+</html>

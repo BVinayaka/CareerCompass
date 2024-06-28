@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <style>
+
+
+        .hero-section {
+          min-height: 50vh;
+          position:relative;
+          
+        }
+
+        .hero-content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+        .hero-text {
+          text-align: left;
+        }
+
+        .hero-image {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+          }
+
+          .card {
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+          }
+      
+          .card:hover {
+            transform: scale(1.05);
+          }
+      
+          .card-img-top {
+            transition: transform 0.3s ease-in-out;
+          }
+      
+          .card:hover .card-img-top {
+            transform: scale(1.1);
+          }
+      
+          .card-body {
+            padding: 20px;
+          }
+
+          
+          body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+          }
+      
+          .contact-container {
+            height: 100%;
+          }
+      
+          .form-container {
+            padding: 0 20px;
+            
+          }
+      
+          .map-container {
+            height: calc(100vh - 20px); 
+          }
+      
+          @media (max-width: 768px) {
+            .form-container, .map-container {
+              width: 100%;
+              height: auto; 
+            }
+          }
+
+         
+
+          /*shape devider*/
+          .custom-shape-divider-bottom-1717033402 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+        
+        .custom-shape-divider-bottom-1717033402 svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 150px;
+        }
+        
+        .custom-shape-divider-bottom-1717033402 .shape-fill {
+            fill: #FFFFFF;
+        }
+
+        /*bottom*/
+        /* CSS for shape divider */
+        .custom-shape-divider-top-1717460689 {
+          top: 0;
+          left: 0;
+          width: 100%;
+          overflow: hidden;
+          line-height: 0;
+          border: none;
+      }
+      
+      .custom-shape-divider-top-1717460689 svg {
+          position: relative;
+          display: block;
+          width: calc(100% + 1.3px);
+          height: 150px;
+      }
+      
+      .custom-shape-divider-top-1717460689 .shape-fill {
+          fill: #FFFFFF;
+      }
+
+      
+    
+      @media (max-width: 767px) {
+        
+        .hero-section .hero-content {
+          padding-top: 0px; /* Adjust top padding */
+          padding-bottom: 0px; /* Adjust bottom padding */
+        }
+        .hero-section .hero-image {
+          height: auto; /* Set height to auto for responsive image */
+          max-width: 100%; /* Ensure image doesn't overflow */
+        }
+      }
+
+      </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-info">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fs-3 fw-semibold" href="#home">Career Compass</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon text-white">&#9776;</span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link fw-medium text-white fs-5" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium text-white fs-5" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium text-white fs-5" href="#services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium text-white fs-5" href="#contact">Contact</a>
+                </li>
+                {% if session['email'] %}
+                <li class="nav-item">
+                    <a class="nav-link fw-medium text-white fs-5" href="#" onclick="confirmLogout()">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link fw-medium text-white fs-5" href="/login">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+   <!--Hero Section-->
+    <section id="home " class="hero-section">
+    <div class="container-fluid p-0 hero-section bg-info text-light" >
+        <div class="row no-gutters h-100">
+          <div class="col-md-6">
+            <div class="hero-content d-flex flex-column justify-content-center align-items-center h-100 p-5">
+              <div class="hero-text">
+                <h2 class="fw-bold fs-1 mb-4">Career Compas</h2>
+                <p class="fw-medium">An AI-Powered Career Guidance App for Students</p>
+                <p class="text-wrap fw-medium">The Career Compass project is an AI-powered app designed to guide secondary level students in choosing their career paths.</p>
+                
+                <div class="d-flex justify-content-center">
+                
+                <a href="#about" class="btn btn-primary">Get Started <i class="bi bi-chevron-down"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 ">
+            <img src="./static/img/portrait-3d.png" class="img-fluid hero-image" alt="Image" style="height:85vh;" >
+          </div>
+        </div>
+        
+        <div class="custom-shape-divider-bottom-1717033402">
+          <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+              <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+          </svg>
+        </div>
+
+      </div>
+    </section>
+
+
+
+
+      <!--About-->
+      <section class="container-fluid py-5 about" id="about">
+        <div class="container">
+          <div class="text-center">
+            <h2 class="text-capitalize text-info fs-1 fw-bold mb-4">About us</h2>
+          </div>
+          <div class="text-wrap">
+            <p>
+              The Career Compass project is an AI-driven application tailored to assist secondary level students in navigating their career paths. By evaluating users’ skills, interests, and goals through interactive quizzes, it provides personalized career recommendations. The app also includes a resume-building feature, offering user-friendly templates and expert advice for crafting professional resumes.
+              In addition, the app serves as a comprehensive resource, providing detailed information about various industries, job roles, and potential growth opportunities. This empowers students to make well-informed decisions about their future careers, enhancing their confidence and clarity in their career planning process.
+               
+            </p>
+           
+           
+          </div>
+        </div>
+        
+    </section>
+   <!--products-->
+    <section id="products mt-5 ">
+      <div>
+        
+        <div id="services" >
+            <h2 class="text-capitalize text-info text-center fs-1 fw-bold">Our Services</h2>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4 m-3" >
+            <div class="col">
+              <div class="card">
+                <a href="/profile" class="link">
+                <img src="./static/img/quiz.jpg" class="card-img-top " alt="quizz">
+                </a>
+                <div class="card-body">
+                  <h5 class="card-title text-uppercase fw-semibold text-info">Career Recommendation</h5>
+                  <p class="card-text text-capitalize fw-medium">Get personalized career recommendations based on your skills and interests.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card">
+                <a href="/resume" class="link">
+                    <img src="./static/img/resume-ana.jpg" class="card-img-top" alt="builder">
+                </a>    
+                <div class="card-body">
+                  <h5 class="card-title text-uppercase fw-semibold text-info">Resume Builder</h5>
+                  <p class="card-text text-capitalize fw-medium">Create a professional resume in minutes with our easy-to-use resume builder.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card">
+                <a href="/job" class="link">
+                  <img src="./static/img/resume.jpg" class="card-img-top" alt="analyzer">
+                </a>    
+                <div class="card-body">
+                  <h5 class="card-title text-uppercase fw-semibold text-info">Resume Analyzer</h5>
+                  <p class="card-text text-capitalize fw-medium">Optimize your resume with our resume analyzer tool to improve your chances of landing your dream job.</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+    </section>  
+
+
+    <!--Contact-->
+    <div class="container-fluid contact-container mt-5" id="contact">
+      <h2 class="text-capitalize text-info text-center fs-1 fw-bold">Contact Us</h2>
+      <div class="form-container">
+        <form id="contactForm" action="https://getform.io/f/ebpdgeyb" method="POST">
+          <div class="form-group m-2">
+            <label for="name" class="text-uppercase fw-semibold text-info">Name:</label>
+            <input type="text" name="name" class="form-control" id="name" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group m-2">
+            <label for="email" class="text-uppercase fw-semibold text-info">Email:</label>
+            <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group m-2">
+            <label for="subject" class="text-uppercase fw-semibold text-info">Subject:</label>
+            <input type="text" name="subject" class="form-control" id="subject" placeholder="Enter subject" required>
+          </div>
+          <div class="form-group m-2">
+            <label for="message" class="text-uppercase fw-semibold text-info">Message:</label>
+            <textarea name="message" class="form-control" id="message" placeholder="Enter message" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-info text-white w-100">Submit</button>
+        </form>
+      </div>
+    
+          <p class="mt-3 fw-semibold text-info fs-2 text-center">Contact Details</p>
+          <p class="text-center text-info fw-medium">Email</p>
+          <p class="text-center fw-normal">carerecampus@gmail.com</p>
+          <p class="text-center text-info fw-medium">location</p>
+          <p class="text-center fw-normal">manglore</p>
+          <p class="text-center text-info fw-medium">contact number</p>
+          <p class="text-center fw-normal">8618371173</p>
+          
+          
+        </div>
+
+
+            <footer>
+              <div class="custom-shape-divider-bottom position-relative w-100 bg-info">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill" fill="white" stroke="none"></path>
+                </svg>
+                <p class="text-center text-white p-3 ">&copy; 2024 Your Website. All Rights Reserved.</p>
+              </div>
+            </footer>
+
+<script>
+   function confirmLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+            window.location.href = "/logout";
+        }
+    }
+    function clearFormFields() {
+    document.getElementById('contactForm').reset();
+  }
+
+  // Event listener for form submission
+  document.getElementById('contactForm').addEventListener('submit', function() {
+    // Clear form fields after submission
+    clearFormFields();
+  });
+</script>
+
+    <!-- Bootstrap JS (Optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

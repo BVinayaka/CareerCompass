@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Questionnaire</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-WW23to1LPoODtI/Atb8EJ2Z4SgZ4wPkBWO2mAH+66PtU9gvBzLzT+gmyUlgJF+b96FhLAs+hRiWj/7hCF7Se+A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="./static/css/quiz.css" />
+    <!-- Adjust the path if necessary -->
+    <style>
+      .no-select {
+        user-select: none; /* Standard syntax */
+        -moz-user-select: none; /* Firefox */
+        -webkit-user-select: none; /* Safari and Chrome */
+        -ms-user-select: none; /* IE 10+ */
+      }
+      #questionCount {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/"
+                onclick="confirmNavigation(event)"
+                >Home</a
+              >
+            </li>
+            <!-- Add more navbar items as needed -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid mt-3" id="hello">
+        <div class="row">
+          <div class="col">
+            <div class="question-numbers-container" id="questionNumbersContainer" style="width: 100%;">
+              <!-- Content for question numbers container -->
+            </div>
+          </div>
+          <div class="col d-flex justify-content-center align-items-center">
+            <div id="questionCount">
+              <!-- Content for question count -->
+            </div>
+            <div class="col d-flex justify-content-end align-items-center">
+            <button type="button" onclick="submitAnswersAndRedirect()" id="button1" class="btn btn-danger">
+              Submit Answers
+            </button></div>
+          </div>
+        </div>
+      </div>
+      
+
+    <!-- <div id="questionCount" class="text-end"></div> -->
+
+    <form
+      id="quizForm"
+      action="/result_page"
+      method="POST"
+      onsubmit="submitAnswersAndRedirect()"
+    >
+      <!-- Your form fields here -->
+    </form>
+
+    
+
+    <!-- Bootstrap JS (Optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome JS (Optional, for icons) -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"
+      integrity="sha512-2ZiaOxYZ70EqeTKNjmziU5cn0EFr6HqSD9Wm5ZG/c/Dr3P1Qok3VEs1l5D3qRYoFJmMD7X3oKqSRKpFVPTKFuQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script>
+      let questions = [];
+
+      function showQuestion(questionNumber) {
+        document.querySelectorAll(".question-container").forEach((question) => {
+          question.classList.remove("active");
+        });
+
+        document
+          .getElementById("question-" + questionNumber)
+          .classList.add("active");
+
+        document.querySelectorAll(".question-number").forEach((qn) => {
+          qn.classList.remove("active");
+        });
+        document
+          .querySelector(".question-number:nth-child(" + questionNumber + ")")
+          .classList.add("active");
+      }
+
+      const questionNumbersContainer = document.getElementById(
+        "questionNumbersContainer"
+      );
+      for (let i = 1; i <= 91; i++) {
+        const questionNumber = document.createElement("span");
+        questionNumber.classList.add("question-number");
+        questionNumber.textContent = i;
+        questionNumber.setAttribute("onclick", `showQuestion(${i})`);
+        questionNumbersContainer.appendChild(questionNumber);
+      }
+
+      function updateQuestionNumberColor(questionNumber, color) {
+        const questionNumberElement = document.querySelector(
+          `.question-number:nth-child(${questionNumber})`
+        );
+        if (questionNumberElement) {
+          questionNumberElement.style.backgroundColor = color;
+        }
+      }
+
+      function selectOption(questionNumber, value) {
+        questions[questionNumber - 1].selectedOption = value;
+        updateQuestionNumberColor(questionNumber, "#00ff40");
+        displayAnsweredCount();
+      }
+
+      function nextQuestion() {
+        const activeQuestion = document.querySelector(
+          ".question-container.active"
+        );
+        const answered = activeQuestion.querySelector(
+          'input[type="radio"]:checked'
+        );
+
+        if (answered) {
+          const activeQuestionNumber = parseInt(
+            activeQuestion.id.split("-")[1]
+          );
+          updateQuestionNumberColor(activeQuestionNumber, "#00ff40");
+          displayAnsweredCount();
+        }
+
+        const nextQuestion = activeQuestion.nextElementSibling;
+
+        if (
+          nextQuestion &&
+          nextQuestion.classList.contains("question-container")
+        ) {
+          const nextQuestionNumber = parseInt(nextQuestion.id.split("-")[1]);
+          const nextQuestionNumberElement = document.querySelector(
+            `.question-number:nth-child(${nextQuestionNumber})`
+          );
+          if (nextQuestionNumberElement) {
+            nextQuestionNumberElement.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+          }
+
+          activeQuestion.classList.remove("active");
+          nextQuestion.classList.add("active");
+          document
+            .querySelector(".question-number.active")
+            .classList.remove("active");
+          nextQuestionNumberElement.classList.add("active");
+
+          // Show back button if it's not the first question
+          document.querySelector(".back-btn").style.display = "inline";
+        }
+
+        // Hide next button if it's the last question
+        if (!nextQuestion.nextElementSibling) {
+          document.querySelector(".next-btn").style.display = "none";
+        }
+
+        // Hide submit button if it's the last question
+        if (!nextQuestion.nextElementSibling) {
+          document.querySelector(".submit-btn").style.display = "inline";
+        }
+
+        displayAnsweredCount();
+      }
+
+      function prevQuestion() {
+        const activeQuestion = document.querySelector(
+          ".question-container.active"
+        );
+        const prevQuestion = activeQuestion.previousElementSibling;
+        const answered = activeQuestion.querySelector(
+          'input[type="radio"]:checked'
+        );
+
+        if (answered) {
+          const activeQuestionNumber = parseInt(
+            activeQuestion.id.split("-")[1]
+          );
+          updateQuestionNumberColor(activeQuestionNumber, "#00ff40");
+          displayAnsweredCount();
+        }
+
+        if (
+          prevQuestion &&
+          prevQuestion.classList.contains("question-container")
+        ) {
+          const prevQuestionNumber = parseInt(prevQuestion.id.split("-")[1]);
+          const prevQuestionNumberElement = document.querySelector(
+            `.question-number:nth-child(${prevQuestionNumber})`
+          );
+          if (prevQuestionNumberElement) {
+            prevQuestionNumberElement.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+          }
+
+          activeQuestion.classList.remove("active");
+          prevQuestion.classList.add("active");
+          document
+            .querySelector(".question-number.active")
+            .classList.remove("active");
+          prevQuestionNumberElement.classList.add("active");
+
+          // Show next button if it's not the last question
+          document.querySelector(".next-btn").style.display = "inline";
+        }
+
+        // Hide back button if it's the first question
+        if (!prevQuestion.previousElementSibling) {
+          document.querySelector(".back-btn").style.display = "none";
+        }
+
+        displayAnsweredCount();
+      }
+
+      window.onload = function () {
+        var sixtyMinutes = 30 * 60,
+          display = document.querySelector("#timer");
+
+        // Show the first question and set its background color to blue
+        showQuestion(1);
+        updateQuestionNumberColor(1, "");
+      };
+
+      function countAnsweredQuestions() {
+        let answeredCount = 0;
+
+        questions.forEach((question) => {
+          if (question.selectedOption) {
+            answeredCount++;
+          }
+        });
+
+        return answeredCount;
+      }
+
+      function displayAnsweredCount() {
+        const totalQuestions = 91;
+        const answeredCount = countAnsweredQuestions();
+
+        document.getElementById(
+          "questionCount"
+        ).textContent = `${answeredCount}/${totalQuestions}`;
+      }
+
+      displayAnsweredCount();
+
+      function addQuestion(questionText, options) {
+        const questionsContainer = document.getElementById("quizForm");
+
+        const questionContainer = document.createElement("div");
+        questionContainer.classList.add("question-container");
+        questionContainer.id = `question-${questions.length + 1}`;
+
+        const questionNumber = document.createElement("h3");
+        questionContainer.appendChild(questionNumber);
+
+        const questionTextElement = document.createElement("p");
+        questionTextElement.textContent = questionText;
+        questionContainer.appendChild(questionTextElement);
+
+        const optionsList = document.createElement("ul");
+        for (let i = 0; i < options.length; i++) {
+          const optionItem = document.createElement("li");
+          const optionLabel = document.createElement("label");
+          const optionInput = document.createElement("input");
+          optionInput.type = "radio";
+          optionInput.name = `question-${questions.length + 1}`;
+          optionInput.value = options[i]; // Store the original option text
+          optionInput.setAttribute(
+            "onchange",
+            `selectOption(${questions.length + 1}, '${options[i]}')`
+          );
+          optionLabel.appendChild(optionInput);
+          optionLabel.appendChild(document.createTextNode(options[i]));
+          optionItem.appendChild(optionLabel);
+          optionsList.appendChild(optionItem);
+        }
+        questionContainer.appendChild(optionsList);
+
+        const backButton = document.createElement("button");
+        backButton.type = "button"; // Set button type to prevent form submission
+        backButton.classList.add("btn", "btn-secondary", "back-btn");
+        backButton.textContent = "Back";
+        backButton.onclick = prevQuestion;
+        questionContainer.appendChild(backButton);
+
+        const nextButton = document.createElement("button");
+        nextButton.type = "button"; // Set button type to prevent form submission
+        nextButton.classList.add("btn", "btn-primary", "next-btn");
+        nextButton.textContent = " Save And Next";
+        nextButton.onclick = nextQuestion;
+        questionContainer.appendChild(nextButton);
+
+        questionsContainer.appendChild(questionContainer);
+
+        questionContainer.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+        // Add the question to the questions array
+        questions.push({
+          selectedOption: null,
+        });
+
+        // Hide back button for the first question
+        if (questions.length === 1) {
+          backButton.style.display = "none";
+        }
+
+        // Hide next button for the last question
+        if (questions.length === 91) {
+          nextButton.style.display = "none";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        addQuestion(
+          "Which programming language is commonly used for developing Android applications?",
+          ["Java", "Python", "C++", "Swift"]
+        );
+
+        addQuestion(
+          "What is the primary goal of data normalization in database management?",
+          [
+            "To eliminate data duplication",
+            "To decrease data consistency",
+            "To eliminate data duplication",
+            "To complicate data retrieval",
+          ]
+        );
+        addQuestion(
+          "What is the primary function of a firewall in cybersecurity?",
+          [
+            "To block authorized access",
+            "To block unauthorized access",
+            "To encrypt sensitive data",
+            "To enhance network speed",
+          ]
+        );
+
+        addQuestion(
+          "Which of the following is NOT a front-end programming language?",
+          ["HTML", "CSS", "JavaScript", "PHP"]
+        );
+
+        addQuestion(
+          "Which software development methodology emphasizes adaptability and customer collaboration?",
+          ["Agile", "Waterfall", "Scrum", "Spiral"]
+        );
+
+        addQuestion(
+          "Which of the following is a primary responsibility of an IT Project Manager?",
+          [
+            "Managing project timelines",
+            "Designing databases",
+            "Writing code",
+            "Conducting data analysis",
+          ]
+        );
+
+        addQuestion("What does SQL stand for in the context of databases?", [
+          "Structured Query Language",
+          "Standard Query Language",
+          "System Query Language",
+          "Sequential Query Language",
+        ]);
+
+        addQuestion(
+          "Which encryption method uses two keys - a public key and a private key?",
+          [
+            "Asymmetric encryption",
+            "Symmetric encryption",
+            "Hashing",
+            "Steganography",
+          ]
+        );
+
+        addQuestion(
+          "What markup language is used for structuring and presenting content on the web?",
+          ["HTML", "XML", "JSON", "CSS"]
+        );
+
+        addQuestion(
+          "What is the purpose of penetration testing in cybersecurity?",
+          [
+            "To detect vulnerabilities in a system",
+            "To encrypt sensitive data",
+            "To improve network speed",
+            "To optimize database performance",
+          ]
+        );
+
+        addQuestion(
+          "In marketing, what does the '4 P's' framework typically refer to?",
+          [
+            "Product, Price, Place, Promotion",
+            "Price, Place, Promotion, Profit",
+            "Product, Price, Place, Promotion",
+            "Product, Promotion, Place, Personnel",
+          ]
+        );
+
+        addQuestion(
+          "What financial statement provides a snapshot of a company's financial position at a specific point in time?",
+          [
+            "Balance sheet",
+            "Income statement",
+            "Cash flow statement",
+            "Statement of retained earnings",
+          ]
+        );
+
+        addQuestion(
+          "Which of the following is NOT a primary function of Human Resources Management?",
+          [
+            "Marketing and advertising",
+            "Recruitment and selection",
+            "Employee training and development",
+            "Performance appraisal",
+          ]
+        );
+
+        addQuestion("What is the primary role of a Management Consultant?", [
+          "Providing strategic advice and solutions to improve organizational performance",
+          "Writing code",
+          "Managing day-to-day operations of a company",
+          "Providing legal advice to businesses",
+        ]);
+
+        addQuestion(
+          "Which financial analysis ratio measures a company's ability to pay its short-term debts?",
+          [
+            "Current Ratio",
+            "Return on Investment (ROI)",
+            "Debt-to-Equity Ratio",
+            "Price-Earnings Ratio",
+          ]
+        );
+
+        addQuestion("What is the key characteristic of a startup?", [
+          "It is typically funded by venture capital or angel investors",
+          "It is a well-established company with a long history",
+          "It operates in a traditional industry",
+          "It has a high level of bureaucracy",
+        ]);
+
+        addQuestion(
+          "Which marketing strategy involves pricing products below the market average to gain market share quickly?",
+          [
+            "Market penetration",
+            "Price skimming",
+            "Product differentiation",
+            "Premium pricing",
+          ]
+        );
+
+        addQuestion(
+          "What is the primary purpose of a SWOT analysis in business?",
+          [
+            "To assess internal strengths and weaknesses and external opportunities and threats",
+            "To analyze a companys financial statements",
+            "To evaluate market trends",
+            "To develop advertising campaigns",
+          ]
+        );
+
+        addQuestion(
+          "What financial metric measures a company's efficiency in generating profits from its shareholders' investments?",
+          [
+            "Return on Equity (ROE)",
+            "Earnings Before Interest and Taxes (EBIT)",
+            "Return on Assets (ROA)",
+            "Gross Profit Margin",
+          ]
+        );
+
+        addQuestion(
+          "What is the term used to describe the process of bringing a new product or service to market?",
+          [
+            "Product launch",
+            "Market research",
+            "Market penetration",
+            "Product development",
+          ]
+        );
+
+        addQuestion(
+          "What is the primary role of a registered nurse (RN) in a healthcare setting?",
+          [
+            "Providing direct patient care",
+            "Diagnosing medical conditions",
+            "Prescribing medications",
+            "Performing surgical procedures",
+          ]
+        );
+
+        addQuestion(
+          "Which healthcare professional is qualified to diagnose and treat common illnesses under the supervision of a physician?",
+          [
+            "Physician Assistant",
+            "Registered Nurse",
+            "Pharmacist",
+            "Physical Therapist",
+          ]
+        );
+
+        addQuestion("What is the primary responsibility of a pharmacist?", [
+          "Dispensing medications and providing medication counseling",
+          "Conducting physical therapy sessions",
+          "Diagnosing medical conditions",
+          "Performing surgical procedures",
+        ]);
+
+        addQuestion(
+          "Which healthcare professional specializes in helping patients regain mobility and functionality after injury or surgery?",
+          [
+            "Physical Therapist",
+            "Registered Nurse",
+            "Pharmacist",
+            "Physician Assistant",
+          ]
+        );
+
+        addQuestion("What is the main focus of a medical researcher?", [
+          "Conducting experiments and studies to advance medical knowledge",
+          "Providing direct patient care",
+          "Diagnosing medical conditions",
+          "Dispensing medications",
+        ]);
+
+        addQuestion(
+          "Which healthcare professional typically works under the supervision of a physician and performs routine clinical tasks?",
+          [
+            "Physician Assistant",
+            "Registered Nurse",
+            "Pharmacist",
+            "Physical Therapist",
+          ]
+        );
+
+        addQuestion("What is the primary goal of physical therapy?", [
+          "Helping patients regain mobility and functionality",
+          "Diagnosing medical conditions",
+          "Prescribing medications",
+          "Performing surgical procedures",
+        ]);
+
+        addQuestion(
+          "Which healthcare professional is responsible for assessing, planning, and implementing patient care plans?",
+          [
+            "Registered Nurse",
+            "Physician Assistant",
+            "Pharmacist",
+            "Physical Therapist",
+          ]
+        );
+
+        addQuestion(
+          "What is the primary role of a registered nurse in medication administration?",
+          [
+            "Administering medications as prescribed",
+            "Diagnosing medical conditions",
+            "Providing direct patient care",
+            "Performing surgical procedures",
+          ]
+        );
+
+        addQuestion(
+          "Which healthcare professional can diagnose medical conditions, prescribe medications, and perform minor procedures under the supervision of a physician?",
+          [
+            "Physician Assistant",
+            "Registered Nurse",
+            "Pharmacist",
+            "Physical Therapist",
+          ]
+        );
+
+        addQuestion(
+          "Which teaching method focuses on hands-on learning experiences and experimentation?",
+          [
+            "Problem-based learning",
+            "Direct instruction",
+            "Inquiry-based learning",
+            "Socratic questioning",
+          ]
+        );
+
+        addQuestion(
+          "What is the primary responsibility of a curriculum developer?",
+          [
+            "Designing educational materials and lesson plans",
+            "Managing classroom activities",
+            "Conducting educational research",
+            "Evaluating student performance",
+          ]
+        );
+
+        addQuestion(
+          "What term describes a strategy used by teachers to adjust instruction to meet the needs of diverse learners?",
+          [
+            "Differentiation",
+            "Standardization",
+            "Homogenization",
+            "Specialization",
+          ]
+        );
+
+        addQuestion(
+          "In higher education, what does the term 'tenure' typically refer to?",
+          [
+            "A system of guaranteed employment for faculty members",
+            "An academic degree",
+            "A fixed-term contract for faculty members",
+            "A form of student financial aid",
+          ]
+        );
+
+        addQuestion("What is the primary role of an education administrator?", [
+          "Managing school operations and personnel",
+          "Developing curriculum",
+          "Conducting research studies",
+          "Delivering instruction in the classroom",
+        ]);
+
+        addQuestion(
+          "Which teaching level typically involves working with students aged 11 to 14 years old?",
+          ["Middle school", "Elementary school", "High school", "Pre-school"]
+        );
+
+        addQuestion(
+          "Which educational theory emphasizes the importance of social interaction in the learning process?",
+          ["Constructivism", "Behaviorism", "Cognitivism", "Humanism"]
+        );
+
+        addQuestion(
+          "What is a common characteristic of Montessori education?",
+          [
+            "Use of mixed-age classrooms",
+            "Emphasis on standardized testing",
+            "Focus on teacher-centered instruction",
+            "Strict adherence to a fixed curriculum",
+          ]
+        );
+
+        addQuestion(
+          "What is the primary goal of summative assessment in education?",
+          [
+            "To evaluate student learning at the end of an instructional unit",
+            "To diagnose student learning needs",
+            "To provide ongoing feedback to students",
+            "To promote student engagement",
+          ]
+        );
+
+        addQuestion(
+          "Which teaching method encourages students to take responsibility for their own learning through self-directed inquiry?",
+          [
+            "Problem-based learning",
+            "Direct instruction",
+            "Cooperative learning",
+            "Socratic questioning",
+          ]
+        );
+
+        addQuestion(
+          "Which software is commonly used by graphic designers for creating vector graphics?",
+          ["Adobe Illustrator", "Adobe Photoshop", "Autodesk Maya", "CorelDRAW"]
+        );
+
+        addQuestion("What does UI stand for in the context of design?", [
+          "User Interface",
+          "User Interaction",
+          "Universal Inclusion",
+          "User Integration",
+        ]);
+
+        addQuestion("In UX design, what does the term 'wireframe' refer to?", [
+          "Basic layout schematic",
+          "Detailed design mockup",
+          "Final product prototype",
+          "User feedback mechanism",
+        ]);
+
+        addQuestion(
+          "What software is commonly used by animators for creating 3D animations?",
+          [
+            "Autodesk Maya",
+            "Adobe After Effects",
+            "Toon Boom Harmony",
+            "Blender",
+          ]
+        );
+
+        addQuestion(
+          "Which designer is primarily responsible for creating clothing and accessories?",
+          ["Fashion Designer", "Graphic Designer", "UI/UX Designer", "Animator"]
+        );
+
+        addQuestion(
+          "What term describes the process of creating a visual representation of a proposed interior space?",
+          ["Rendering", "Sketching", "Moodboarding", "Interior Design"]
+        );
+
+        addQuestion(
+          "Which design principle focuses on arranging elements to create a sense of visual hierarchy?",
+          ["Emphasis", "Balance", "Proportion", "Unity"]
+        );
+
+        addQuestion(
+          "What does the term 'typography' refer to in graphic design?",
+          [
+            "Arrangement of text elements",
+            "Color theory",
+            "Use of images",
+            "Composition of layouts",
+          ]
+        );
+
+        addQuestion(
+          "Which design field emphasizes creating user-friendly and aesthetically pleasing digital interfaces?",
+          [
+            "UI/UX Design",
+            "Graphic Design",
+            "Fashion Design",
+            "Interior Design",
+          ]
+        );
+
+        addQuestion("What is the primary role of a storyboard in animation?", [
+          "To plan the sequence of scenes",
+          "To finalize character designs",
+          "To create a script for voice actors",
+          "To select color palettes for animation backgrounds",
+        ]);
+
+        addQuestion(
+          "What is the primary responsibility of a mechanical engineer?",
+          [
+            "Developing mechanical systems and devices",
+            "Designing buildings and structures",
+            "Planning and managing construction projects",
+            "Ensuring compliance with environmental regulations",
+          ]
+        );
+
+        addQuestion(
+          "Which engineering discipline is primarily concerned with the design and construction of roads, bridges, and infrastructure?",
+          [
+            "Civil Engineering",
+            "Mechanical Engineering",
+            "Electrical Engineering",
+            "Environmental Engineering",
+          ]
+        );
+
+        addQuestion("What is the main focus of electrical engineering?", [
+          "Developing electrical circuits and systems",
+          "Designing HVAC systems",
+          "Generating renewable energy",
+          "Analyzing soil composition",
+        ]);
+
+        addQuestion(
+          "Which professional is responsible for designing buildings and overseeing their construction?",
+          [
+            "Architect",
+            "Mechanical Engineer",
+            "Civil Engineer",
+            "Electrical Engineer",
+          ]
+        );
+
+        addQuestion("What does an environmental engineer primarily work on?", [
+          "Developing sustainable waste management systems",
+          "Designing consumer electronics",
+          "Planning urban transportation networks",
+          "Constructing high-rise buildings",
+        ]);
+
+        addQuestion(
+          "Which engineering discipline involves analyzing and mitigating the environmental impact of engineering projects?",
+          [
+            "Environmental Engineering",
+            "Mechanical Engineering",
+            "Civil Engineering",
+            "Electrical Engineering",
+          ]
+        );
+
+        addQuestion(
+          "What is the role of a civil engineer in the construction industry?",
+          [
+            "Managing construction projects",
+            "Designing electrical circuits",
+            "Developing software applications",
+            "Researching new materials for manufacturing",
+          ]
+        );
+
+        addQuestion("What is the primary focus of architectural engineering?", [
+          "Structural analysis and design",
+          "Urban planning and development",
+          "Renewable energy systems",
+          "Environmental conservation",
+        ]);
+
+        addQuestion(
+          "Which engineering discipline is primarily concerned with the design and maintenance of HVAC (heating, ventilation, and air conditioning) systems?",
+          [
+            "Mechanical Engineering",
+            "Civil Engineering",
+            "Electrical Engineering",
+            "Architectural Engineering",
+          ]
+        );
+
+        addQuestion("What is the primary responsibility of an architect?", [
+          "Creating building designs and plans",
+          "Designing mechanical systems",
+          "Developing electrical circuits",
+          "Analyzing environmental impact assessments",
+        ]);
+
+        // Health and Medicine Questions
+
+        addQuestion(
+          "Who specializes in studying human behavior and mental processes?",
+          ["Psychologist", "Anthropologist", "Historian", "Counselor/Therapist"]
+        );
+
+        addQuestion(
+          "Which profession is primarily focused on providing support and assistance to individuals and communities facing social and economic challenges?",
+          ["Police Officer", "Social Worker", "Paralegal", "Anthropologist"]
+        );
+
+        addQuestion(
+          "Who studies past events and interprets historical evidence?",
+          ["Historian", "Anthropologist", "Psychologist", "Counselor/Therapist"]
+        );
+
+        addQuestion("What is the primary focus of anthropology?", [
+          "Studying human societies and cultures",
+          "Analyzing financial markets",
+          "Designing computer software",
+          "Conducting medical research",
+        ]);
+
+        addQuestion("What is the main goal of environmental science?", [
+          "Understanding and protecting the environment",
+          "Studying human societies and cultures",
+          "Analyzing financial markets",
+          "Designing computer software",
+        ]);
+
+        addQuestion(
+          "Who specializes in studying ecosystems and biodiversity conservation?",
+          [
+            "Environmental Scientist",
+            "Conservation Biologist",
+            "Renewable Energy Engineer",
+            "Sustainability Consultant",
+          ]
+        );
+
+        addQuestion(
+          "What profession involves designing and implementing renewable energy systems?",
+          [
+            "Renewable Energy Engineer",
+            "Environmental Scientist",
+            "Conservation Biologist",
+            "Sustainability Consultant",
+          ]
+        );
+
+        addQuestion(
+          "Who analyzes policies and regulations related to environmental issues?",
+          [
+            "Environmental Policy Analyst",
+            "Environmental Scientist",
+            "Conservation Biologist",
+            "Renewable Energy Engineer",
+          ]
+        );
+
+        addQuestion(
+          "What is the primary responsibility of a sustainability consultant?",
+          [
+            "Developing strategies for sustainable practices",
+            "Designing computer software",
+            "Analyzing financial markets",
+            "Conducting archaeological excavations",
+          ]
+        );
+
+        // Business and Management Questions
+
+        addQuestion("What is the main responsibility of an event planner?", [
+          "Organizing and overseeing events, conferences, and meetings",
+          "Managing hotel operations",
+          "Providing counseling and therapy",
+          "Designing computer algorithms",
+        ]);
+
+        addQuestion(
+          "What role involves coordinating and organizing various aspects of events and functions?",
+          ["Event Planner", "Tour Guide", "Restaurant Manager", "Hotel Manager"]
+        );
+
+        addQuestion(
+          "Who assists individuals and groups in planning and booking travel arrangements?",
+          [
+            "Travel Agent",
+            "Event Planner",
+            "Hotel Manager",
+            "Restaurant Manager",
+          ]
+        );
+
+        addQuestion("What is the primary focus of a tour guide?", [
+          "Providing informative commentary to tourists",
+          "Managing hotel operations",
+          "Organizing and overseeing events, conferences, and meetings",
+          "Conducting psychological assessments",
+        ]);
+
+        addQuestion(
+          "Who assists in managing the day-to-day operations of a restaurant?",
+          [
+            "Restaurant Manager",
+            "Hotel Manager",
+            "Event Planner",
+            "Travel Agent",
+          ]
+        );
+
+        addQuestion("What is the main responsibility of a police officer?", [
+          "Enforcing laws, investigating crimes, and maintaining public order",
+          "Providing legal representation in court",
+          "Managing hotel operations",
+          "Conducting archaeological excavations",
+        ]);
+
+        addQuestion(
+          "Who assists lawyers in legal research, drafting documents, and case preparation?",
+          [
+            "Paralegal",
+            "Lawyer/Attorney",
+            "Police Officer",
+            "Probation Officer",
+          ]
+        );
+
+        addQuestion("What is the primary role of a paralegal?", [
+          "Assisting lawyers with legal research and case preparation",
+          "Conducting medical research",
+          "Managing hotel operations",
+          "Providing counseling and therapy",
+        ]);
+
+        addQuestion(
+          "Who is responsible for supervising and monitoring individuals who are under court-ordered supervision?",
+          [
+            "Probation Officer",
+            "Paralegal",
+            "Police Officer",
+            "Legal Assistant",
+          ]
+        );
+
+        addQuestion(
+          "What profession involves providing legal advice, drafting legal documents, and representing clients in court?",
+          [
+            "Lawyer/Attorney",
+            "Paralegal",
+            "Police Officer",
+            "Probation Officer",
+          ]
+        );
+
+        // Miscellaneous Questions
+
+        addQuestion(
+          "A train passes a station platform in 36 seconds and a man standing on the platform in 20 seconds. If the speed of the train is 54 km/hr, what is the length of the platform?",
+          ["240 m", "120 m", "300 m", "500 m"]
+        );
+
+        addQuestion(
+          "An observer 1.6 m tall is 20SQRT(3) away from a tower. The angle of elevation from his eye to the top of the tower is 30°. The height of the tower is:",
+          ["21.6 m", "23.2 m", "24.72m", "25 m"]
+        );
+
+        addQuestion(
+          "Mr. Thomas invested an amount of Rs. 13,900 divided in two different schemes A and B at the simple interest rate of 14% p.a. and 11% p.a. respectively. If the total amount of simple interest earned in 2 years be Rs. 3508, what was the amount invested in Scheme B?",
+          ["Rs. 6400", "Rs. 6500", "Rs. 7200", "Rs. 7500"]
+        );
+
+        addQuestion(
+          "The cost price of 20 articles is the same as the selling price of x articles. If the profit is 25%, then the value of x is:",
+          ["15", "16", "18", "25"]
+        );
+
+        addQuestion(
+          "A fruit seller had some apples. He sells 40% apples and still has 420 apples. Originally, he had:",
+          ["588 apples", "600 apples", "672 apples", "700 apples"]
+        );
+
+        addQuestion(
+          "It was Sunday on Jan 1, 2006. What was the day of the week Jan 1, 2010?",
+          ["Sunday", "Saturday", "Friday", "Wednesday"]
+        );
+
+        addQuestion(
+          "In the first 10 overs of a cricket game, the run rate was only 3.2. What should be the run rate in the remaining 40 overs to reach the target of 282 runs?",
+          ["6.25", "6.5", "6.75", "7"]
+        );
+
+        addQuestion(
+          "A hall is 15 m long and 12 m broad. If the sum of the areas of the floor and the ceiling is equal to the sum of the areas of four walls, the volume of the hall is:",
+          ["720", "900", "1200", "1800"]
+        );
+
+        addQuestion(
+          "What least number must be added to 1056, so that the sum is completely divisible by 23 ?",
+          ["2", "3", "18", "21"]
+        );
+
+        addQuestion(
+          "The sum of ages of 5 children born at the intervals of 3 years each is 50 years. What is the age of the youngest child?",
+          ["4 years", "7 years", "9 years", "13 years"]
+        );
+
+        addQuestion(
+          "What least number must be added to 1056, so that the sum is completely divisible by 23 ?",
+          ["564", "645", "735", "756"]
+        );
+
+        addQuestion(
+          "The sum of ages of 5 children born at the intervals of 3 years each is 50 years. What is the age of the youngest child?",
+          ["4", "7", "9", "13"]
+        );
+      });
+      let timerInterval;
+
+      function submitAnswersAndRedirect() {
+        // Stop the timer
+        clearInterval(timerInterval);
+        var flag = 0; // Initialize flag variable
+
+        // Disable text selection for question text
+        document
+          .querySelectorAll(".question-container p")
+          .forEach((questionText) => {
+            questionText.classList.add("no-select");
+          });
+
+        // Show the "Please wait" message before submission
+        alert("Submitting the form. Please wait...");
+
+        // Your existing code for submitting answers
+        var form = document.getElementById("quizForm");
+        var formData = new FormData(form);
+
+        fetch("/submit_answers", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              flag = 1; // Set flag if not all questions were answered
+              alert("Please answer all the questions heiekdk");
+            }
+            // Continue to execute redirect code even if there's an error in response
+            return response;
+          })
+          .catch((error) => {
+            // Handle network error
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+            // Set flag to indicate error
+            flag = 1;
+          });
+
+        // Introduce a 5-second delay before executing the redirection
+        setTimeout(() => {
+          // Redirect based on flag value
+          if (flag === 0) {
+            alert("You will receive an email within 5 minutes.");
+            window.location.href = "/";
+          }
+        }, 5000); // 5000 milliseconds = 5 seconds
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const profileButton = document.getElementById("profileButton");
+        const profileContent = document.getElementById("profileContent");
+
+        profileButton.addEventListener("click", function () {
+          profileContent.style.display = "block";
+          displayProfileData();
+        });
+      });
+      function confirmNavigation(event) {
+        if (!confirm("Do you really want to go to the home page?")) {
+          event.preventDefault();
+        }
+      }
+    </script>
+  </body>
+</html>

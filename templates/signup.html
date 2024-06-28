@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/login.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg bg-info">
+        <div class="container-fluid d-flex justify-content-center">
+            <a class="navbar-brand text-white fs-3 fw-semibold text-center" href="#home">Career Compas</a>
+          
+        </div>
+    </nav>
+
+    <section class="h-100 gradient-form">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-10">
+                    <div class="card rounded-3 bg-light">
+                        <div class="p-1">
+                            <h2 class="text-center text-primary">Sign Up</h2>
+                        </div>
+                        <div class="row g-0">
+                            <!-- Image column -->
+                            <div class="col-lg-6 d-flex align-items-center justify-content-center order-lg-last">
+                                <img src="./static/img/signup-rmb.png" class="img-fluid" alt="Image">
+                            </div>
+                            <!-- Form column -->
+                            <div class="col-lg-6 order-lg-first">
+                                <div class="card-body p-md-5 mx-md-4">
+                                    <form action="/signup" method="post" onsubmit="return validateSignupForm()">
+                                        
+                                        {% with messages = get_flashed_messages(with_categories=true) %}
+                                        {% if messages %}
+                                        {% for category, message in messages %}
+                                        {% if category == 'signup_error' %}
+                                        <div class="alert alert-danger mt-4" id="error" role="alert">
+                                            {{ message }}
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endif %}
+                                        {% endwith %}
+                                        <div class="form-outline mb-4">
+                                            <label for="username" class="form-label text-primary fw-medium">Username</label>
+                                            <input type="text" id="username" class="form-control bottom-border" name="username" placeholder="Fullname" required>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <label for="email" class="form-label text-primary fw-medium">Email Address</label>
+                                            <input type="email" id="email" class="form-control bottom-border" name="email" placeholder="Email Address" required>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <label for="password" class="form-label text-primary fw-medium">Password</label>
+                                            <input type="password" id="password" class="form-control bottom-border" name="password" placeholder="Password" required>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <label for="mobile" class="form-label text-primary fw-medium">Mobile</label>
+                                            <input type="number" id="mobile" class="form-control bottom-border" name="mobile" placeholder="Mobile" required>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <label for="confirm_password" class="form-label text-primary fw-medium">Confirm Password</label>
+                                            <input type="password" id="confirm_password" class="form-control bottom-border" name="confirm_password" placeholder="Confirm Password" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" required> I accept the <a href="#">Terms of Use</a> &amp; <a href="#">Privacy Policy</a>
+                                            </label>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary w-100 mt-2 mb-2">Sign Up</button>
+                                        </div>
+                                    </form>
+                                    <div class="text-center">Already have an account? <a href="/login">Login here</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Bootstrap JS (Optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // JavaScript validation function
+        function validateSignupForm() {
+            var name = document.querySelector('input[name="username"]').value;
+            var email = document.querySelector('input[name="email"]').value;
+            var password1 = document.querySelector('input[name="password"]').value;
+            var password2 = document.querySelector('input[name="confirm_password"]').value;
+
+            if (name === "" || email === "" || password1 === "" || password2 === "") {
+                alert("Please fill out all the form fields.");
+                return false;
+            } else if (password1 !== password2) {
+                alert("Passwords do not match.");
+                return false;
+            } else {
+                // If all fields are filled and passwords match, proceed with form submission
+                return true;
+            }
+        }
+    </script>
+</body>
+</html>
+``

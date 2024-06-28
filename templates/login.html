@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Career Compass</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./static/css/login.css" />
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-lg bg-info">
+      <div class="container-fluid d-flex justify-content-center">
+          <a class="navbar-brand text-white fs-3 fw-semibold text-center" href="#home">Career Compas</a>
+        
+      </div>
+  </nav>
+  
+  <section class="h-100 gradient-form">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 bg-light">
+                    <div class="p-1">
+                        <h2 class="text-center text-primary">Login</h2>
+                    </div>
+                    <div class="row g-0">
+                        <!-- Image column -->
+                        <div class="col-lg-6 d-flex align-items-center justify-content-center order-lg-last">
+                            <img src="./static/img/login-rmb.png" class="img-fluid" alt="Career Compass Image">
+                        </div>
+                        <!-- Form column -->
+                        <div class="col-lg-6 order-lg-first">
+                            <div class="card-body p-md-5 mx-md-4">
+                                <form id="loginForm" method="post">
+                                    <p></p>
+                                    {% with messages = get_flashed_messages(with_categories=true) %}
+                                    {% if messages %}
+                                    {% for category, message in messages %}
+                                    {% if category == 'login_error' %}
+                                    <div class="alert alert-danger mt-4" id="error" role="alert">
+                                        {{ message }}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    {% endwith %}
+                                    <div class="form-outline mb-4">
+                                        <label for="email" class="form-label text-primary fw-medium">Username</label>
+                                        <input type="email" id="email" class="form-control bottom-border" name="email" required placeholder="Email address">
+                                    </div>
+                                    <div class="form-outline mb-4">
+                                        <label for="password" class="form-label text-primary fw-medium">Password</label>
+                                        <input type="password" id="password" class="form-control bottom-border" name="password" required placeholder="Password">
+                                    </div>
+                                    <a class="text-primary" href="/forgot_password">Forgot password?</a>
+                                    <div class="text-center mt-2 mb-5 pb-1">
+                                        <button class="btn btn-primary btn-block fa-lg mb-3 w-100 btn-c " type="submit">Log in</button>
+                                        <button class="btn btn-primary btn-block fa-lg mb-3 w-100 btn-c " type="reset">Cancel</button>
+                                        <p>Don't have an account? <a href="/signup">Signup</a></p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+    
+
+    <!-- Bootstrap JS (Optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

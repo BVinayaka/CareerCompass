@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Jobs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        nav {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+        .search-bar-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .search-bar {
+            width: 90%;
+            max-width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .job-listing {
+            flex: 0 1 calc(100% - 20px);
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .job-listing h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .job-listing p {
+            margin: 5px 0;
+        }
+        .job-listing a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .job-listing a:hover {
+            text-decoration: underline;
+        }
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="/"onclick="confirmNavigation(event)">Home</a>
+        </div>
+    </nav>
+    <br>
+    <h1>Job Opportunities Matched to Your Resume</h1>
+    <div class="search-bar-container">
+        <input type="text" id="searchBar" class="search-bar" onkeyup="filterJobs()" placeholder="Search by title or location...">
+    </div>
+    <div class="container" id="jobContainer">
+        {% for row in matched_rows %}
+            <div class="job-listing">
+                <h2>{{ row['Title'] }}</h2>
+                <p><strong>Company:</strong> {{ row['Company'] }}</p>
+                <p><strong>Location:</strong> {{ row['city'] }}</p>
+                <p><strong>Description:</strong> {{ row['Description'] }}</p>
+                <p><strong></strong> <a href="{{ row['url'] }}" target="_blank">Apply now!</a></p>
+            </div>
+        {% endfor %}
+    </div>
+    
+
+    <script>
+        function filterJobs() {
+            const searchInput = document.getElementById('searchBar').value.toLowerCase();
+            const jobContainer = document.getElementById('jobContainer');
+            const jobListings = jobContainer.getElementsByClassName('job-listing');
+
+            Array.from(jobListings).forEach(listing => {
+                const title = listing.getElementsByTagName('h2')[0].textContent.toLowerCase();
+                const location = listing.getElementsByTagName('p')[1].textContent.toLowerCase();
+                if (title.includes(searchInput) || location.includes(searchInput)) {
+                    listing.style.display = '';
+                } else {
+                    listing.style.display = 'none';
+                }
+            });
+        }
+
+
+        function confirmNavigation(event) {
+            if (!confirm("Do you really want to go to the home page?")) {
+                event.preventDefault();
+            }
+        }
+
+    </script>
+</body>
+</html>
